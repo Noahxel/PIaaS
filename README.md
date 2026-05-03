@@ -3,7 +3,6 @@
 # PIaaS (Prediction Infrastructure as a Service)
 
 **Turn any price series into structured decision signals via a simple API.**
-Prices → Features → Model → Decision
 
 ```bash
 curl -X POST http://localhost:8000/v1/predict \
