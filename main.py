@@ -7,7 +7,7 @@ from slowapi.errors import RateLimitExceeded
 
 from auth import require_api_key
 from config import RATE_LIMIT
-from features import compute
+from signals import compute
 from model import train, infer
 
 _clf = None

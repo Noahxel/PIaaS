@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 
-from features import Features, compute
+from signals import Features, compute
 
 
 def _generate_dataset(n: int = 2000, seed: int = 42) -> tuple[np.ndarray, np.ndarray]:
