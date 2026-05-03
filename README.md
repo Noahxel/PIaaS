@@ -1,6 +1,9 @@
-# PIaaS
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+![API](https://img.shields.io/badge/API-REST-green)
+# PIaaS (Prediction Infrastructure as a Service)
 
-**Turn any price series into a structured trading signal — one API call.**
+**Turn any price series into structured decision signals via a simple API.**
+Prices → Features → Model → Decision
 
 ```bash
 curl -X POST http://localhost:8000/v1/predict \
