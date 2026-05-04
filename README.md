@@ -1,14 +1,14 @@
-# PIaaS — Time Series Signal API
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-REST-green)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-**Turn a price series into structured decision signals.**
+# PIaaS — Trading Signal API for Developers
 
-PIaaS is a lightweight REST API that converts numeric time-series data into:
-- BUY / SELL / HOLD decisions
-- confidence score
-- risk estimate
-- optional explanatory signals
+**Send a price series. Get a structured BUY / SELL / HOLD signal with confidence score, risk score, and explainable reasoning.**
 
-No external data required. Runs locally in seconds.
+PIaaS is a lightweight REST API that converts a price series into structured trading signals — no ML expertise or external data required.
+
+Works with any price series — crypto, stocks, commodities, synthetic data.
 
 ---
 
@@ -25,64 +25,34 @@ curl -X POST http://localhost:8000/v1/predict \
 {
   "action": "HOLD",
   "confidence": 0.51,
+  "expected_value": -0.01,
   "risk_score": 0.18,
-  "signals": [
-    "momentum positive",
-    "price above short-term average"
+  "signal_strength": 0.01,
+  "reasoning_signals": [
+    "positive momentum (+1.90%)",
+    "price above MA5 (+0.55%)"
   ]
 }
 ```
 
 ---
 
-## What it does
-
-PIaaS extracts simple features from price series:
-- momentum
-- volatility
-- moving averages
-
-Then produces a structured signal:
-
-- **action** → BUY / SELL / HOLD  
-- **confidence** → model certainty  
-- **risk_score** → estimated volatility  
-- **signals** → optional explainability layer  
-
----
-
-## Why this exists
-
-When building trading bots, dashboards, or simulations, you often need:
-
-> a simple decision signal from raw time-series data
-
-Instead of building a full ML pipeline, PIaaS provides a lightweight API that returns structured outputs instantly.
-
-Works with:
-- crypto prices
-- stock data
-- any numeric time series
-
----
-
-## Trust & Design Principles
-
-Model is deterministic for identical inputs.
-
-No external data required. Runs locally.
+## How it works
 
 ```
-prices → feature extraction → model → signal
+prices[ ] → feature extraction → logistic regression → signal + reasoning
 ```
+
+- Extracts **momentum**, **volatility**, and **moving-average** features from the last N prices
+- Model trains once on first startup and is persisted to disk — subsequent starts are instant
 
 ---
 
-## Typical use cases
+## Why developers use this
 
-- prototyping trading strategies  
-- signal generation for dashboards  
-- ML experimentation on time series data  
+- **Algorithmic trading bots** — call the API in a loop, no ML pipeline to build or maintain
+- **Financial dashboards** — surface structured signals alongside raw price data
+- **Strategy prototyping** — get a working signal endpoint in under 5 minutes
 
 ---
 
@@ -95,9 +65,7 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
-Default API key: `dev-key-1234`
-
-Model is trained once on first run and persisted locally for instant startup next time.
+Default API key: `dev-key-1234` — no config needed to start.
 
 ---
 
@@ -107,40 +75,65 @@ Model is trained once on first run and persisted locally for instant startup nex
 from sdk.client import PIaaSClient
 
 client = PIaaSClient("http://localhost:8000", api_key="dev-key-1234")
-
 signal = client.predict([100, 101.5, 99.8, 102.3, 103.1, 101.9])
 
 if signal["action"] == "BUY" and signal["confidence"] > 0.65:
-    print("execute trade")
+    place_order(size=compute_position(signal["risk_score"]))
 ```
 
 ---
 
-## API Reference
+## Response fields
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/v1/health` | Service status |
-| POST | `/v1/predict` | Generate signal from price series |
+| Field | Type | Description |
+|---|---|---|
+| `action` | `BUY · SELL · HOLD` | Recommended decision |
+| `confidence` | `0.0 – 1.0` | Model confidence in the prediction |
+| `expected_value` | `float` | P(up) − P(down) |
+| `risk_score` | `0.0 – 1.0` | Volatility-based risk estimate |
+| `signal_strength` | `0.0 – 1.0` | Distance from neutral (0 = no signal, 1 = strong) |
+| `reasoning_signals` | `list[str]` | Human-readable explanation of the decision |
 
-Interactive docs: http://localhost:8000/docs
+---
+
+## Why this is different
+
+- `deterministic` — identical inputs always produce identical outputs — no stochastic inference
+- `local-first` — zero network calls at inference time — runs entirely in your process
+- `transparent` — logistic regression, not a black box — every signal is traceable to a feature
+- `self-contained` — no third-party API key, no data broker, no external rate limit
+
+---
+
+## What this is not
+
+- Not financial advice — outputs are developer signals, not investment recommendations
+- Not a prediction guarantee — confidence scores reflect the model, not market certainty
+- Not a managed service — designed to run in your own infrastructure
 
 ---
 
 ## Configuration
 
 ```bash
-API_KEYS=dev-key-1234
-RATE_LIMIT=60/minute
+cp .env.example .env
 ```
+
+| Variable | Default | Description |
+|---|---|---|
+| `API_KEYS` | `dev-key-1234` | Comma-separated valid API keys |
+| `RATE_LIMIT` | `60/minute` | Per-key rate limit |
 
 ---
 
-## Roadmap
+## API reference
 
-- model persistence ✔  
-- input validation ✔  
-- API improvements (next)  
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/health` | — | Server and model status |
+| `POST` | `/v1/predict` | `X-API-Key` header | Get a trading signal from a price series |
+
+Interactive docs: `http://localhost:8000/docs`
 
 ---
 

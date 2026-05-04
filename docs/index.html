@@ -3,66 +3,132 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PIaaS — Trading Signal API for Developers</title>
-  <meta name="description" content="REST API that turns any price series into a structured BUY/SELL/HOLD trading signal. Confidence score, risk score, explainable reasoning. Python, FastAPI, no external dependencies." />
+  <title>PIaaS — Trading Signal API for Python Developers | Buy Sell Hold from Price Series</title>
+  <meta name="description" content="Open-source REST API that converts any price series into structured BUY/SELL/HOLD trading signals. Confidence score, risk score, explainable reasoning. Python, FastAPI, runs locally, no external dependencies." />
+  <meta name="keywords" content="trading signal API, time series API, buy sell hold API, Python trading API, price series prediction API, algorithmic trading Python, FastAPI trading signals" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #fff; color: #111; line-height: 1.6; }
     a { color: #0066cc; text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    header { padding: 64px 24px 48px; max-width: 760px; margin: 0 auto; }
-    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; }
-    header p { font-size: 1.1rem; color: #444; max-width: 560px; }
+    /* Hero */
+    header { padding: 60px 24px 0; max-width: 760px; margin: 0 auto; }
+    .eyebrow { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: #888; margin-bottom: 14px; }
+    h1 { font-size: 2rem; font-weight: 700; line-height: 1.2; margin-bottom: 14px; }
+    .sub { font-size: 1rem; color: #444; max-width: 520px; margin-bottom: 10px; }
+    .micro { font-size: 0.82rem; color: #888; margin-bottom: 26px; }
+    .cta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 52px; }
+    .btn { display: inline-block; padding: 10px 22px; border-radius: 5px; font-size: 0.9rem; font-weight: 600; }
+    .btn-primary { background: #111; color: #fff; }
+    .btn-primary:hover { background: #333; text-decoration: none; }
+    .btn-secondary { border: 1px solid #bbb; color: #333; }
+    .btn-secondary:hover { border-color: #888; text-decoration: none; }
 
-    section { padding: 40px 24px; max-width: 760px; margin: 0 auto; border-top: 1px solid #eee; }
-    section h2 { font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 20px; }
+    /* Trust bar */
+    .trust-bar { border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 12px 24px; max-width: 760px; margin: 0 auto; display: flex; gap: 24px; flex-wrap: wrap; font-size: 0.8rem; color: #555; font-family: "SFMono-Regular", Consolas, monospace; }
+    .trust-bar span { white-space: nowrap; }
+    .trust-bar span::before { content: "✓  "; color: #2a9d2a; font-weight: 700; }
 
-    pre { background: #f5f5f5; border-radius: 6px; padding: 20px; overflow-x: auto; font-size: 0.875rem; line-height: 1.5; }
+    /* Sections */
+    section { padding: 44px 24px; max-width: 760px; margin: 0 auto; border-top: 1px solid #eee; }
+    h2 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 20px; }
+
+    /* Code */
+    pre { background: #f5f5f5; border-radius: 6px; padding: 18px 20px; overflow-x: auto; font-size: 0.83rem; line-height: 1.55; }
     code { font-family: "SFMono-Regular", Consolas, monospace; }
-    pre code { background: none; padding: 0; }
-    p code { background: #f0f0f0; padding: 2px 5px; border-radius: 3px; font-size: 0.875em; }
+    pre code { background: none; }
+    p code, li code, td code { background: #f0f0f0; padding: 2px 5px; border-radius: 3px; font-size: 0.83em; font-family: "SFMono-Regular", Consolas, monospace; }
 
-    .demo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    @media (max-width: 600px) { .demo { grid-template-columns: 1fr; } }
+    /* Demo */
+    .demo { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 560px) { .demo { grid-template-columns: 1fr; } }
+    .demo-label { font-size: 0.72rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 7px; }
 
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #eee; }
-    th { color: #888; font-weight: 500; }
+    /* Architecture */
+    .arch { font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.85rem; color: #444; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 16px 20px; background: #f5f5f5; border-radius: 6px; }
+    .arch .node { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 3px 10px; }
+    .arch .arrow { color: #bbb; }
 
-    ul { padding-left: 20px; }
-    li { margin-bottom: 8px; }
+    /* Use cases */
+    .usecases { display: flex; flex-direction: column; gap: 12px; }
+    .usecase { padding: 14px 16px; background: #fafafa; border-radius: 6px; border-left: 3px solid #111; }
+    .usecase strong { font-size: 0.93rem; display: block; margin-bottom: 2px; }
+    .usecase p { font-size: 0.86rem; color: #555; }
 
-    .steps { counter-reset: step; }
-    .step { display: flex; gap: 16px; margin-bottom: 24px; }
-    .step-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: #111; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; margin-top: 2px; }
+    /* Diff table */
+    .diff { display: flex; flex-direction: column; gap: 10px; }
+    .diff-row { display: flex; gap: 12px; align-items: baseline; font-size: 0.9rem; }
+    .diff-label { flex-shrink: 0; font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.8rem; background: #f0f0f0; padding: 2px 8px; border-radius: 3px; color: #333; }
+    .diff-desc { color: #444; }
 
-    footer { padding: 40px 24px; max-width: 760px; margin: 0 auto; border-top: 1px solid #eee; font-size: 0.875rem; color: #888; display: flex; gap: 24px; }
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 20px; }
+    .step { display: flex; gap: 14px; }
+    .step-num { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: #111; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; margin-top: 4px; }
+    .step-body p { margin-bottom: 8px; font-size: 0.93rem; color: #333; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid #eee; }
+    th { color: #888; font-weight: 500; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Not list */
+    .not-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .not-list li { font-size: 0.9rem; color: #555; padding-left: 18px; position: relative; }
+    .not-list li::before { content: "✗"; position: absolute; left: 0; color: #c00; font-weight: 700; }
+
+    /* Bottom CTA */
+    .bottom-cta { text-align: center; padding: 52px 24px; border-top: 1px solid #eee; max-width: 760px; margin: 0 auto; }
+    .bottom-cta p { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+    .bottom-cta .micro { margin-bottom: 20px; }
+
+    /* Footer */
+    footer { padding: 32px 24px; max-width: 760px; margin: 0 auto; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-links { display: flex; gap: 20px; font-size: 0.85rem; }
+    .footer-meta { font-size: 0.78rem; color: #aaa; font-family: "SFMono-Regular", Consolas, monospace; }
   </style>
 </head>
 <body>
 
+<!-- ─── HERO ─────────────────────────────────────────────────────────────── -->
 <header>
-  <h1>Trading Signal API for Developers</h1>
-  <p>Send a price series. Get a structured BUY/SELL/HOLD signal with confidence score, risk score, and explainable reasoning. No ML setup required.</p>
+  <p class="eyebrow">Open-source · Python · FastAPI · MIT</p>
+  <h1>Trading Signal API<br>for Python Developers</h1>
+  <p class="sub">
+    Send a price series, get a structured <strong>BUY / SELL / HOLD</strong> signal —
+    with confidence score, risk estimate, and explainable reasoning.
+    No ML expertise required.
+  </p>
+  <p class="micro">Works with any price series — crypto, stocks, commodities, synthetic data.</p>
+  <div class="cta-row">
+    <a class="btn btn-primary" href="https://github.com/your-username/PIaaS">View on GitHub</a>
+    <a class="btn btn-secondary" href="#quickstart">Run locally ↓</a>
+  </div>
 </header>
 
+<!-- ─── TRUST BAR ─────────────────────────────────────────────────────────── -->
+<div class="trust-bar">
+  <span>Deterministic — same input, same output</span>
+  <span>Zero network calls at inference</span>
+  <span>No external data dependency</span>
+  <span>Runs fully local</span>
+</div>
+
+<!-- ─── DEMO ──────────────────────────────────────────────────────────────── -->
 <section>
-  <h2>Demo</h2>
+  <h2>Input → Output</h2>
   <div class="demo">
     <div>
-      <p style="font-size:0.8rem;color:#888;margin-bottom:8px;">Request</p>
-      <pre><code>curl -X POST /v1/predict \
+      <p class="demo-label">Request</p>
+      <pre><code>curl -X POST http://localhost:8000/v1/predict \
   -H "X-API-Key: dev-key-1234" \
-  -d '{
-  "prices": [
-    100, 101.5, 99.8,
-    102.3, 103.1, 101.9
-  ]
-}'</code></pre>
+  -H "Content-Type: application/json" \
+  -d '{"prices": [100, 101.5, 99.8,
+                  102.3, 103.1, 101.9]}'</code></pre>
     </div>
     <div>
-      <p style="font-size:0.8rem;color:#888;margin-bottom:8px;">Response</p>
+      <p class="demo-label">Response</p>
       <pre><code>{
   "action": "HOLD",
   "confidence": 0.51,
@@ -78,30 +144,66 @@
   </div>
 </section>
 
+<!-- ─── HOW IT WORKS ──────────────────────────────────────────────────────── -->
 <section>
-  <h2>Use cases</h2>
-  <ul>
-    <li><strong>Algorithmic trading bot</strong> — consume signals in a loop without building an ML pipeline from scratch</li>
-    <li><strong>Financial dashboard</strong> — surface structured decisions alongside raw price data</li>
-    <li><strong>Strategy prototyping</strong> — get a working signal endpoint in under 5 minutes to validate a trading idea</li>
+  <h2>How it works</h2>
+  <div class="arch">
+    <span class="node">prices[ ]</span>
+    <span class="arrow">→</span>
+    <span class="node">feature extraction</span>
+    <span class="arrow">→</span>
+    <span class="node">logistic regression</span>
+    <span class="arrow">→</span>
+    <span class="node">signal + reasoning</span>
+  </div>
+  <ul style="margin-top:16px;padding-left:20px;font-size:0.9rem;color:#444;display:flex;flex-direction:column;gap:6px;">
+    <li>Extracts <strong>momentum</strong>, <strong>volatility</strong>, and <strong>moving-average</strong> features from the last N prices</li>
+    <li>Model trains once on first startup and is persisted to disk — subsequent starts are instant</li>
   </ul>
 </section>
 
+<!-- ─── WHY DEVELOPERS USE THIS ───────────────────────────────────────────── -->
 <section>
-  <h2>Get started</h2>
+  <h2>Why developers use this</h2>
+  <div class="usecases">
+    <div class="usecase">
+      <strong>Algorithmic trading bots</strong>
+      <p>Call the buy/sell/hold API in a loop — no ML pipeline to build or maintain.</p>
+    </div>
+    <div class="usecase">
+      <strong>Financial dashboards</strong>
+      <p>Surface structured signals alongside raw price data.</p>
+    </div>
+    <div class="usecase">
+      <strong>Strategy prototyping</strong>
+      <p>Get a working signal endpoint in under 5 minutes to validate an idea.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── QUICKSTART ────────────────────────────────────────────────────────── -->
+<section id="quickstart">
+  <h2>Run locally in 60 seconds</h2>
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
-      <div>
-        <p style="margin-bottom:8px;">Install and run</p>
-        <pre><code>pip install -r requirements.txt
-uvicorn main:app --reload</code></pre>
+      <div class="step-body">
+        <p>Clone and install</p>
+        <pre><code>git clone https://github.com/your-username/PIaaS
+cd PIaaS && pip install -r requirements.txt</code></pre>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
-      <div>
-        <p style="margin-bottom:8px;">Call the API — default key works immediately</p>
+      <div class="step-body">
+        <p>Start the server</p>
+        <pre><code>uvicorn main:app --reload</code></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <p>Call the API — default key works immediately, no config needed</p>
         <pre><code>curl -X POST http://localhost:8000/v1/predict \
   -H "X-API-Key: dev-key-1234" \
   -H "Content-Type: application/json" \
@@ -109,18 +211,22 @@ uvicorn main:app --reload</code></pre>
       </div>
     </div>
     <div class="step">
-      <div class="step-num">3</div>
-      <div>
-        <p style="margin-bottom:8px;">Or use the Python SDK</p>
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <p>Or use the Python SDK</p>
         <pre><code>from sdk.client import PIaaSClient
 
 client = PIaaSClient("http://localhost:8000", api_key="dev-key-1234")
-signal = client.predict([100, 101.5, 99.8, 102.3, 103.1, 101.9])</code></pre>
+signal = client.predict([100, 101.5, 99.8, 102.3, 103.1, 101.9])
+
+if signal["action"] == "BUY" and signal["confidence"] > 0.65:
+    place_order(size=compute_position(signal["risk_score"]))</code></pre>
       </div>
     </div>
   </div>
 </section>
 
+<!-- ─── RESPONSE FIELDS ───────────────────────────────────────────────────── -->
 <section>
   <h2>Response fields</h2>
   <table>
@@ -128,21 +234,67 @@ signal = client.predict([100, 101.5, 99.8, 102.3, 103.1, 101.9])</code></pre>
       <tr><th>Field</th><th>Type</th><th>Description</th></tr>
     </thead>
     <tbody>
-      <tr><td><code>action</code></td><td>BUY · SELL · HOLD</td><td>Recommended action</td></tr>
-      <tr><td><code>confidence</code></td><td>0.0–1.0</td><td>Model confidence in the prediction</td></tr>
+      <tr><td><code>action</code></td><td>BUY · SELL · HOLD</td><td>Recommended decision</td></tr>
+      <tr><td><code>confidence</code></td><td>0.0 – 1.0</td><td>Model confidence in the prediction</td></tr>
       <tr><td><code>expected_value</code></td><td>float</td><td>P(up) − P(down)</td></tr>
-      <tr><td><code>risk_score</code></td><td>0.0–1.0</td><td>Volatility-based risk estimate</td></tr>
-      <tr><td><code>signal_strength</code></td><td>0.0–1.0</td><td>Distance from neutral (0 = no signal)</td></tr>
-      <tr><td><code>reasoning_signals</code></td><td>list[str]</td><td>Human-readable explanation</td></tr>
+      <tr><td><code>risk_score</code></td><td>0.0 – 1.0</td><td>Volatility-based risk estimate</td></tr>
+      <tr><td><code>signal_strength</code></td><td>0.0 – 1.0</td><td>Distance from neutral (0 = no signal, 1 = strong)</td></tr>
+      <tr><td><code>reasoning_signals</code></td><td>list[str]</td><td>Human-readable explanation of the decision</td></tr>
     </tbody>
   </table>
 </section>
 
+<!-- ─── WHY THIS IS DIFFERENT ─────────────────────────────────────────────── -->
+<section>
+  <h2>Why this is different</h2>
+  <div class="diff">
+    <div class="diff-row">
+      <span class="diff-label">deterministic</span>
+      <span class="diff-desc">Identical inputs always produce identical outputs — no stochastic inference</span>
+    </div>
+    <div class="diff-row">
+      <span class="diff-label">local-first</span>
+      <span class="diff-desc">Zero network calls at inference time — runs entirely in your process</span>
+    </div>
+    <div class="diff-row">
+      <span class="diff-label">transparent</span>
+      <span class="diff-desc">Logistic regression, not a black box — every signal is traceable to a feature</span>
+    </div>
+    <div class="diff-row">
+      <span class="diff-label">self-contained</span>
+      <span class="diff-desc">No data broker, no API key, no rate limit from a third party</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHAT THIS IS NOT ──────────────────────────────────────────────────── -->
+<section>
+  <h2>What this is not</h2>
+  <ul class="not-list">
+    <li>Not financial advice — outputs are developer signals, not investment recommendations</li>
+    <li>Not a prediction guarantee — confidence scores reflect the model, not market certainty</li>
+    <li>Not a managed service — designed to run in your own infrastructure</li>
+  </ul>
+</section>
+
+<!-- ─── BOTTOM CTA ────────────────────────────────────────────────────────── -->
+<div class="bottom-cta">
+  <p>Ready to add trading signals to your project?</p>
+  <p class="micro">No setup required beyond <code>pip install</code>. Works in under 60 seconds.</p>
+  <div class="cta-row" style="justify-content:center;">
+    <a class="btn btn-primary" href="https://github.com/your-username/PIaaS">View on GitHub</a>
+    <a class="btn btn-secondary" href="#quickstart">Run locally ↑</a>
+  </div>
+</div>
+
+<!-- ─── FOOTER ────────────────────────────────────────────────────────────── -->
 <footer>
-  <a href="https://github.com/your-username/PIaaS">GitHub</a>
-  <span>MIT License</span>
-  <span>Python 3.10+</span>
-  <span>No external dependencies</span>
+  <div class="footer-links">
+    <a href="https://github.com/your-username/PIaaS">GitHub</a>
+    <a href="https://github.com/your-username/PIaaS/blob/main/README.md">Docs</a>
+    <a href="https://github.com/your-username/PIaaS/blob/main/LICENSE">MIT License</a>
+  </div>
+  <p class="footer-meta">Python 3.10+ · FastAPI · scikit-learn · No external dependencies</p>
 </footer>
 
 </body>
