@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PIaaS — Trading Signal API for Developers</title>
+  <meta name="description" content="REST API that turns any price series into a structured BUY/SELL/HOLD trading signal. Confidence score, risk score, explainable reasoning. Python, FastAPI, no external dependencies." />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #fff; color: #111; line-height: 1.6; }
+    a { color: #0066cc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header { padding: 64px 24px 48px; max-width: 760px; margin: 0 auto; }
+    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; }
+    header p { font-size: 1.1rem; color: #444; max-width: 560px; }
+
+    section { padding: 40px 24px; max-width: 760px; margin: 0 auto; border-top: 1px solid #eee; }
+    section h2 { font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 20px; }
+
+    pre { background: #f5f5f5; border-radius: 6px; padding: 20px; overflow-x: auto; font-size: 0.875rem; line-height: 1.5; }
+    code { font-family: "SFMono-Regular", Consolas, monospace; }
+    pre code { background: none; padding: 0; }
+    p code { background: #f0f0f0; padding: 2px 5px; border-radius: 3px; font-size: 0.875em; }
+
+    .demo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .demo { grid-template-columns: 1fr; } }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #eee; }
+    th { color: #888; font-weight: 500; }
+
+    ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
+
+    .steps { counter-reset: step; }
+    .step { display: flex; gap: 16px; margin-bottom: 24px; }
+    .step-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: #111; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; margin-top: 2px; }
+
+    footer { padding: 40px 24px; max-width: 760px; margin: 0 auto; border-top: 1px solid #eee; font-size: 0.875rem; color: #888; display: flex; gap: 24px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Trading Signal API for Developers</h1>
+  <p>Send a price series. Get a structured BUY/SELL/HOLD signal with confidence score, risk score, and explainable reasoning. No ML setup required.</p>
+</header>
+
+<section>
+  <h2>Demo</h2>
+  <div class="demo">
+    <div>
+      <p style="font-size:0.8rem;color:#888;margin-bottom:8px;">Request</p>
+      <pre><code>curl -X POST /v1/predict \
+  -H "X-API-Key: dev-key-1234" \
+  -d '{
+  "prices": [
+    100, 101.5, 99.8,
+    102.3, 103.1, 101.9
+  ]
+}'</code></pre>
+    </div>
+    <div>
+      <p style="font-size:0.8rem;color:#888;margin-bottom:8px;">Response</p>
+      <pre><code>{
+  "action": "HOLD",
+  "confidence": 0.51,
+  "expected_value": -0.01,
+  "risk_score": 0.18,
+  "signal_strength": 0.01,
+  "reasoning_signals": [
+    "positive momentum (+1.90%)",
+    "price above MA5 (+0.55%)"
+  ]
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Use cases</h2>
+  <ul>
+    <li><strong>Algorithmic trading bot</strong> — consume signals in a loop without building an ML pipeline from scratch</li>
+    <li><strong>Financial dashboard</strong> — surface structured decisions alongside raw price data</li>
+    <li><strong>Strategy prototyping</strong> — get a working signal endpoint in under 5 minutes to validate a trading idea</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Get started</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <p style="margin-bottom:8px;">Install and run</p>
+        <pre><code>pip install -r requirements.txt
+uvicorn main:app --reload</code></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <p style="margin-bottom:8px;">Call the API — default key works immediately</p>
+        <pre><code>curl -X POST http://localhost:8000/v1/predict \
+  -H "X-API-Key: dev-key-1234" \
+  -H "Content-Type: application/json" \
+  -d '{"prices": [100, 101.5, 99.8, 102.3, 103.1, 101.9]}'</code></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <p style="margin-bottom:8px;">Or use the Python SDK</p>
+        <pre><code>from sdk.client import PIaaSClient
+
+client = PIaaSClient("http://localhost:8000", api_key="dev-key-1234")
+signal = client.predict([100, 101.5, 99.8, 102.3, 103.1, 101.9])</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Response fields</h2>
+  <table>
+    <thead>
+      <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>action</code></td><td>BUY · SELL · HOLD</td><td>Recommended action</td></tr>
+      <tr><td><code>confidence</code></td><td>0.0–1.0</td><td>Model confidence in the prediction</td></tr>
+      <tr><td><code>expected_value</code></td><td>float</td><td>P(up) − P(down)</td></tr>
+      <tr><td><code>risk_score</code></td><td>0.0–1.0</td><td>Volatility-based risk estimate</td></tr>
+      <tr><td><code>signal_strength</code></td><td>0.0–1.0</td><td>Distance from neutral (0 = no signal)</td></tr>
+      <tr><td><code>reasoning_signals</code></td><td>list[str]</td><td>Human-readable explanation</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <a href="https://github.com/your-username/PIaaS">GitHub</a>
+  <span>MIT License</span>
+  <span>Python 3.10+</span>
+  <span>No external dependencies</span>
+</footer>
+
+</body>
+</html>

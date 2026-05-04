@@ -9,6 +9,9 @@ dist/
 build/
 .pytest_cache/
 
+# trained model artifact — generated at first startup
+model.joblib
+
 # internal dev files
 claude.md
 CLAUDE.md

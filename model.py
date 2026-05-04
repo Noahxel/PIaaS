@@ -1,7 +1,12 @@
+from pathlib import Path
+
+import joblib
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 
 from signals import Features, compute
+
+_MODEL_PATH = Path("model.joblib")
 
 
 def _generate_dataset(n: int = 2000, seed: int = 42) -> tuple[np.ndarray, np.ndarray]:
@@ -21,9 +26,12 @@ def _generate_dataset(n: int = 2000, seed: int = 42) -> tuple[np.ndarray, np.nda
 
 
 def train() -> LogisticRegression:
+    if _MODEL_PATH.exists():
+        return joblib.load(_MODEL_PATH)
     X, y = _generate_dataset()
     clf = LogisticRegression(max_iter=200)
     clf.fit(X, y)
+    joblib.dump(clf, _MODEL_PATH)
     return clf
 
 
