@@ -2,7 +2,7 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-REST-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-# PIaaS — Trading Signal API for Developers
+# PIaaS — Trading Signal API for Python Developers
 
 **Send a price series. Get a structured BUY / SELL / HOLD signal with confidence score, risk score, and explainable reasoning.**
 
